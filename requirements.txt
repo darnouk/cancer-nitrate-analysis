@@ -1,0 +1,4 @@
+Flask
+geopandas
+shapely
+numpy

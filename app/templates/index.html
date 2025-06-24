@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Well Nitrates and Cancer Occurrences in Wisconsin</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+
+    #map {
+      height: calc(100% - 50px);
+      width: 100%;
+    }
+
+    #sidebarToggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 280px;
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      z-index: 1101;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 1.1em;
+      text-align: center;
+    }
+
+    .sidebar label {
+      margin-top: 15px;
+      display: block;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+
+    .sidebar input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .sidebar button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #submitBtn {
+      background-color: #fff;
+      color: #111;
+    }
+
+    #resetBtn {
+      background-color: #ccc;
+      color: #000;
+    }
+
+    .sidebar .results {
+      margin-top: 20px;
+    }
+
+    .sidebar .results h3 {
+      font-size: 1em;
+      border-bottom: 1px solid #444;
+      padding-bottom: 4px;
+    }
+
+    .sidebar .results p {
+      font-size: 0.9em;
+      margin: 6px 0;
+    }
+
+    .sidebar .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>Well Nitrates and Cancer Occurrences in Wisconsin</header>
+
+  <button id="sidebarToggle">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">×</span>
+    <h2>☰ Nitrates and Cancer<br>Occurrences in Wisconsin</h2>
+
+    <label for="kVal">Distance Decay Coefficient:</label>
+    <input type="number" id="kVal" placeholder="Enter Number">
+
+    <label for="resSlider">Hexbin Areas (sq. miles):</label>
+    <input type="number" id="resSlider" placeholder="Enter Number">
+
+    <button id="submitBtn" onclick="updateIDW()">★ Submit</button>
+    <button id="resetBtn" onclick="resetInputs()">Reset</button>
+
+    <div class="results">
+      <h3>Your Results</h3>
+      <p><strong>Regression Equation:</strong> <span id="regressionEq">N/A</span></p>
+      <p><strong>R-Squared Value:</strong> <span id="r2Val">N/A</span></p>
+      <p style="font-size: 0.8em; color: #ccc;">Note: R-squared values closer to 1 show a strong relationship between variables.</p>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</body>
+</html>
