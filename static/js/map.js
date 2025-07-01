@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// First load census tracts
+// Load census tracts first
 fetch('/static/data/cancer_tracts.geojson')
   .then(res => res.json())
   .then(tracts => {
@@ -28,7 +28,7 @@ fetch('/static/data/cancer_tracts.geojson')
       }
     }).addTo(map);
 
-    // THEN load nitrate wells so they're drawn on top
+    // Load well data
     fetch('/static/data/well_nitrate.geojson')
       .then(res => res.json())
       .then(wells => {
@@ -38,7 +38,7 @@ fetch('/static/data/cancer_tracts.geojson')
             const color = getNitrateColor(val);
             const rounded = Math.round(val * 100) / 100;
             return L.circleMarker(latlng, {
-              radius: 5,
+              radius: 3,
               fillColor: color,
               color: '#333',
               weight: 0.5,
@@ -49,7 +49,7 @@ fetch('/static/data/cancer_tracts.geojson')
       });
   });
 
-// IDW generate function
+// IDW interpolation handler
 function updateIDW() {
   console.log("🟢 updateIDW() triggered");
 
@@ -69,7 +69,7 @@ function updateIDW() {
         if (pt.x == null || pt.y == null || pt.nitrate == null) return;
 
         const circle = L.circleMarker([pt.y, pt.x], {
-          radius: 4,
+          radius: 2,
           fillColor: getNitrateColor(pt.nitrate),
           fillOpacity: 0.6,
           color: "#333",
@@ -87,7 +87,7 @@ function updateIDW() {
     });
 }
 
-// Nitrate color scale
+// Color scales
 function getNitrateColor(val) {
   return val > 11.66 ? '#983404' :
          val > 6.72  ? '#d85e0d' :
@@ -96,7 +96,6 @@ function getNitrateColor(val) {
                        '#ffffcf';
 }
 
-// Cancer rate color scale
 function getCancerColor(val) {
   return val > 58 ? '#421f6f' :
          val > 33 ? '#69609c' :
@@ -105,25 +104,24 @@ function getCancerColor(val) {
                     '#f0eff4';
 }
 
-// Nitrate legend
+// Legends
 const nitrateLegend = L.control({ position: 'bottomright' });
 nitrateLegend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
-  div.innerHTML = '<h4>Nitrate Concentration (parts per million)</h4>';
+  div.innerHTML = '<h4>Nitrate Concentration (ppm)</h4>';
   div.innerHTML += '<div><span style="background:#ffffcf"></span>-1.89 – 1.44 ppm</div>';
   div.innerHTML += '<div><span style="background:#feda8e"></span>1.45 – 3.84 ppm</div>';
   div.innerHTML += '<div><span style="background:#fe9928"></span>3.85 – 6.71 ppm</div>';
   div.innerHTML += '<div><span style="background:#d85e0d"></span>6.73 – 11.52 ppm</div>';
-  div.innerHTML += '<div><span style="background:#983404"></span>11.67 – 17.07 ppm </div>';
+  div.innerHTML += '<div><span style="background:#983404"></span>11.67 – 17.07 ppm</div>';
   return div;
 };
 nitrateLegend.addTo(map);
 
-// Cancer rate legend
 const cancerLegend = L.control({ position: 'bottomright' });
 cancerLegend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
-  div.innerHTML = '<h4>Cancer Rate (in %)</h4>';
+  div.innerHTML = '<h4>Cancer Rate (%)</h4>';
   div.innerHTML += '<div><span style="background:#f0eff4"></span>0–6%</div>';
   div.innerHTML += '<div><span style="background:#cec9e3"></span>7–17%</div>';
   div.innerHTML += '<div><span style="background:#9c96bf"></span>18–33%</div>';
@@ -133,20 +131,16 @@ cancerLegend.onAdd = function () {
 };
 cancerLegend.addTo(map);
 
-console.log("✅ map.js fully ready!");
-
-// Sidebar toggle logic
+// Sidebar + reset
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.style.display = sidebar.style.display === 'flex' ? 'none' : 'flex';
-  }
-  
-  document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
-  
-  function resetInputs() {
-    document.getElementById('kVal').value = '';
-    document.getElementById('resSlider').value = '';
-    document.getElementById('regressionEq').textContent = 'N/A';
-    document.getElementById('r2Val').textContent = 'N/A';
-  }
-  
+  const sidebar = document.getElementById('sidebar');
+  sidebar.style.display = sidebar.style.display === 'flex' ? 'none' : 'flex';
+}
+document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+
+function resetInputs() {
+  document.getElementById('kVal').value = '';
+  document.getElementById('resSlider').value = '';
+  document.getElementById('regressionEq').textContent = 'N/A';
+  document.getElementById('r2Val').textContent = 'N/A';
+}

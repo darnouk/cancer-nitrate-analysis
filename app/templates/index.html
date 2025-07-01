@@ -117,6 +117,64 @@
       cursor: pointer;
       color: #fff;
     }
+
+    .legend {
+      background: white;
+      padding: 10px;
+      line-height: 1.5em;
+      color: #000;
+      font-size: 0.85em;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+
+    .legend h4 {
+      margin: 0 0 5px;
+      font-size: 1em;
+    }
+
+    .legend div {
+      display: flex;
+      align-items: center;
+    }
+
+    .legend span {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      border: 1px solid #999;
+    }
+
+    /* Splash Modal */
+    .modal {
+      display: block;
+      position: fixed;
+      z-index: 2000;
+      padding-top: 80px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.75);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: auto;
+      padding: 20px;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 8px;
+      color: #000;
+    }
+
+    .modal .close {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -147,7 +205,27 @@
 
   <div id="map"></div>
 
+  <!-- Splash Modal -->
+  <div id="splashModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeSplash">&times;</span>
+      <h2>About This App</h2>
+      <p>This application visualizes nitrate concentrations in wells and cancer rates across Wisconsin census tracts.</p>
+      <ul>
+        <li>Use the sidebar ☰ to adjust IDW interpolation parameters.</li>
+        <li>Click <strong>Submit</strong> to generate the nitrate surface.</li>
+        <li>View cancer rate patterns and explore regression results.</li>
+        <li>Click on features for detailed info.</li>
+      </ul>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+  <script>
+    document.getElementById("closeSplash").onclick = function() {
+      document.getElementById("splashModal").style.display = "none";
+    };
+  </script>
 </body>
 </html>
