@@ -2,3 +2,6 @@ Flask
 geopandas
 shapely
 numpy
+scipy
+scikit-learn
+pandas

@@ -1,0 +1,141 @@
+/* Legend styling */
+.legend {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 10px;
+}
+
+.legend h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.legend div {
+  margin: 3px 0;
+  display: flex;
+  align-items: center;
+}
+
+.legend span {
+  width: 18px;
+  height: 14px;
+  display: inline-block;
+  margin-right: 8px;
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+
+/* Ensure proper stacking of legends */
+.leaflet-bottom.leaflet-right {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+.leaflet-control {
+  margin-bottom: 10px !important;
+}
+
+/* Progress bar overlay styling */
+#progressOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+#progressContainer {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 300px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#progressBar {
+  width: 0%;
+  height: 20px;
+  background: #4CAF50;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+#progressBarContainer {
+  width: 100%;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+#currentStep {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+#timeRemaining {
+  color: #666;
+  font-size: 14px;
+}
+
+#cancelButton {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+#cancelButton:hover {
+  background: #d32f2f;
+}
+
+/* Sidebar styling */
+#sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+#sidebarToggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  background: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+#sidebarToggle:hover {
+  background: #f0f0f0;
+}

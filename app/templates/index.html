@@ -67,13 +67,18 @@
       font-size: 0.95em;
     }
 
-    .sidebar input[type="number"] {
+    .sidebar input[type="number"], .sidebar select {
       width: 100%;
       padding: 6px;
       margin-top: 5px;
       margin-bottom: 10px;
       border: none;
       border-radius: 4px;
+    }
+
+    .sidebar select {
+      background-color: white;
+      color: black;
     }
 
     .sidebar button {
@@ -175,6 +180,110 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    /* Progress Bar Popup Styles */
+    .progress-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .progress-popup {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      min-width: 400px;
+      max-width: 500px;
+    }
+
+    .progress-popup h3 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.2em;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #45a049);
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .2) 50%,
+        rgba(255, 255, 255, .2) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 50px 50px;
+      animation: move 2s linear infinite;
+    }
+
+    @keyframes move {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 50px 50px;
+      }
+    }
+
+    .progress-text {
+      margin: 10px 0;
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .progress-time {
+      margin: 10px 0;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .progress-cancel {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .progress-cancel:hover {
+      background-color: #da190b;
+    }
   </style>
 </head>
 <body>
@@ -186,20 +295,37 @@
     <span class="close-btn" onclick="toggleSidebar()">×</span>
     <h2>☰ Nitrates and Cancer<br>Occurrences in Wisconsin</h2>
 
+    <label for="analysisType">Analysis Type:</label>
+    <select id="analysisType" onchange="toggleAnalysisInputs()">
+      <option value="hexbin">Hexbin Analysis (Recommended)</option>
+      <option value="grid">Grid-Based Analysis</option>
+    </select>
+
     <label for="kVal">Distance Decay Coefficient:</label>
-    <input type="number" id="kVal" placeholder="Enter Number">
+    <input type="number" id="kVal" placeholder="Enter Number" value="2" step="0.1" min="0.5" max="10">
 
-    <label for="resSlider">Hexbin Areas (sq. miles):</label>
-    <input type="number" id="resSlider" placeholder="Enter Number">
+    <div id="hexbinInputs">
+      <label for="hexbinArea">Hexbin Areas (sq. miles, 0.01-10):</label>
+      <input type="number" id="hexbinArea" placeholder="Enter Number" value="0.1" step="0.01" min="0.01" max="10">
+      <p style="font-size: 0.75em; color: #ccc; margin: 5px 0;">Controls the size of hexagonal analysis areas. Larger values create bigger hexagons.</p>
+    </div>
 
-    <button id="submitBtn" onclick="updateIDW()">★ Submit</button>
+    <div id="gridInputs" style="display: none;">
+      <label for="resSlider">Grid Resolution:</label>
+      <input type="number" id="resSlider" placeholder="Enter Number" value="5" step="1" min="2" max="50">
+      <p style="font-size: 0.75em; color: #ccc; margin: 5px 0;">Controls the density of interpolation grid points.</p>
+    </div>
+
+    <button id="submitBtn" onclick="updateAnalysis()">★ Submit</button>
     <button id="resetBtn" onclick="resetInputs()">Reset</button>
 
     <div class="results">
       <h3>Your Results</h3>
-      <p><strong>Regression Equation:</strong> <span id="regressionEq">N/A</span></p>
-      <p><strong>R-Squared Value:</strong> <span id="r2Val">N/A</span></p>
-      <p style="font-size: 0.8em; color: #ccc;">Note: R-squared values closer to 1 show a strong relationship between variables.</p>
+      <p><strong>Regression Equation:</strong> <span id="regressionEq">Loading...</span></p>
+      <p><strong>R-Squared Value:</strong> <span id="r2Val">Loading...</span></p>
+      <p><strong>Correlation:</strong> <span id="correlationVal">Loading...</span></p>
+      <p><strong>Census Tracts Analyzed:</strong> <span id="countiesCount">Loading...</span></p>
+      <p style="font-size: 0.8em; color: #ccc;">Note: R-squared values closer to 1 show a strong relationship between variables. Correlation values range from -1 to +1.</p>
     </div>
   </div>
 
@@ -221,11 +347,35 @@
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/map.js') }}?v=20250107006"></script>
   <script>
     document.getElementById("closeSplash").onclick = function() {
       document.getElementById("splashModal").style.display = "none";
     };
   </script>
+
+  <!-- Progress Bar Popup -->
+  <div id="progressOverlay" class="progress-overlay">
+    <div class="progress-popup">
+      <h3>🔄 Processing Your Analysis</h3>
+      <p class="progress-text">Computing IDW interpolation and regression analysis...</p>
+      
+      <div class="progress-bar-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      
+      <div class="progress-time">
+        <div id="progressPercent">0%</div>
+        <div id="timeRemaining">Estimating time...</div>
+      </div>
+      
+      <div class="progress-text">
+        <div id="currentStep">Initializing...</div>
+      </div>
+      
+      <button id="cancelProgress" class="progress-cancel" onclick="cancelCalculation()">Cancel</button>
+    </div>
+  </div>
+
 </body>
 </html>
